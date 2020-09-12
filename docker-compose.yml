@@ -1,0 +1,25 @@
+version: "3.1"
+
+services:
+  db:
+    image: postgres:12.4
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: password123
+      POSTGRES_USER: admin
+      POSTGRES_DB: lireddit
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer:4.7.7
+    restart: always
+    ports:
+      - 8090:8080
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
