@@ -21,5 +21,13 @@ services:
     depends_on:
       - db
 
+  redis-server:
+    image: redis:6.0.8
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+
 volumes:
   pgdata:
+  redis:
