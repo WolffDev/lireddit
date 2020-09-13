@@ -1,4 +1,3 @@
-import { MyContext } from "src/types";
 import "reflect-metadata";
 import { MikroORM } from "@mikro-orm/core";
 import { ApolloServer } from "apollo-server-express";
@@ -7,6 +6,7 @@ import { buildSchema } from "type-graphql";
 import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
+import cors from "cors";
 
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
@@ -26,6 +26,13 @@ const main = async () => {
 
   const RedisStore = connectRedis(session);
   const redisClient = redis.createClient();
+
+  app.use(
+    cors({
+      origin: "http://localhost:3000",
+      credentials: true,
+    })
+  );
 
   app.use(
     session({
@@ -48,10 +55,10 @@ const main = async () => {
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }): MyContext => ({ em: orm.em, req, res }),
+    context: ({ req, res }) => ({ em: orm.em, req, res }),
   });
 
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(PORT, () => {
     console.log(`Server is listening on http://localhost:${PORT}`);
